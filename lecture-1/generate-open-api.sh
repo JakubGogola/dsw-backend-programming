@@ -11,4 +11,3 @@ docker run --rm -v ${PWD}:/local openapitools/openapi-generator-cli generate \
     -i /local/open-api-example-spec.yaml \
     -g python \
     -o /local/client
-
