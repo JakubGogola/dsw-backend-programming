@@ -55,3 +55,4 @@ async def get_user_orders(id: StrictInt = Path(...)):
 @router.get("/users", response_model=List[User])
 async def get_users():
     return mock_users
+
