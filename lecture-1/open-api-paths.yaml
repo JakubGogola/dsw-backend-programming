@@ -1,0 +1,7 @@
+paths:
+  /coffee:
+    get:
+      summary: Pobierz listę kaw
+      responses:
+        "200":
+          description: Lista kaw

@@ -1,0 +1,168 @@
+openapi: 3.0.0
+info:
+  title: User & Order API
+  description: API do zarządzania użytkownikami i ich zamówieniami
+  version: 1.0.0
+servers:
+  - url: https://api.example.com
+    description: Serwer produkcyjny
+  - url: http://localhost:8000
+    description: Serwer deweloperski
+
+paths:
+  /users:
+    get:
+      summary: Pobiera listę użytkowników
+      operationId: getUsers
+      responses:
+        "200":
+          description: Lista użytkowników
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+
+    post:
+      summary: Tworzy nowego użytkownika
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCreate"
+      responses:
+        "201":
+          description: Użytkownik został utworzony
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /users/{id}:
+    get:
+      summary: Pobiera szczegóły użytkownika
+      operationId: getUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Szczegóły użytkownika
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: Użytkownik nie znaleziony
+
+    delete:
+      summary: Usuwa użytkownika
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Użytkownik został usunięty
+
+  /users/{id}/orders:
+    get:
+      summary: Pobiera zamówienia użytkownika
+      operationId: getUserOrders
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Lista zamówień użytkownika
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+
+  /orders:
+    post:
+      summary: Tworzy nowe zamówienie
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderCreate"
+      responses:
+        "201":
+          description: Zamówienie zostało utworzone
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    UserCreate:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        total:
+          type: number
+          format: float
+        status:
+          type: string
+          enum: [Pending, Processing, Shipped, Delivered]
+        created_at:
+          type: string
+          format: date-time
+
+    OrderCreate:
+      type: object
+      required:
+        - user_id
+        - total
+      properties:
+        user_id:
+          type: integer
+        total:
+          type: number
+          format: float

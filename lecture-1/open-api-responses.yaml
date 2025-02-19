@@ -1,0 +1,7 @@
+responses:
+  "200":
+    description: Sukces
+    content:
+      application/json:
+        schema:
+          $ref: "#/components/schemas/Coffee"

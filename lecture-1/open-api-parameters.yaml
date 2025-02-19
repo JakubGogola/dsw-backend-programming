@@ -1,0 +1,10 @@
+paths:
+  /coffee/{id}:
+    get:
+      summary: Pobierz szczegóły kawy
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer

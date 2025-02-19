@@ -1,0 +1,202 @@
+openapi: 3.0.0
+info:
+  description: API do zarządzania użytkownikami i ich zamówieniami
+  title: User & Order API
+  version: 1.0.0
+servers:
+- description: Serwer produkcyjny
+  url: https://api.example.com
+- description: Serwer deweloperski
+  url: http://localhost:8000
+paths:
+  /users:
+    get:
+      operationId: getUsers
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/User'
+                type: array
+          description: Lista użytkowników
+      summary: Pobiera listę użytkowników
+    post:
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: Użytkownik został utworzony
+      summary: Tworzy nowego użytkownika
+  /users/{id}:
+    delete:
+      operationId: deleteUser
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: Użytkownik został usunięty
+      summary: Usuwa użytkownika
+    get:
+      operationId: getUser
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: Szczegóły użytkownika
+        "404":
+          description: Użytkownik nie znaleziony
+      summary: Pobiera szczegóły użytkownika
+  /users/{id}/orders:
+    get:
+      operationId: getUserOrders
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Order'
+                type: array
+          description: Lista zamówień użytkownika
+      summary: Pobiera zamówienia użytkownika
+  /orders:
+    post:
+      operationId: createOrder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreate'
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: Zamówienie zostało utworzone
+      summary: Tworzy nowe zamówienie
+components:
+  schemas:
+    User:
+      example:
+        name: name
+        created_at: 2000-01-23T04:56:07.000+00:00
+        id: 0
+        email: email
+      properties:
+        id:
+          title: id
+          type: integer
+        name:
+          title: name
+          type: string
+        email:
+          title: email
+          type: string
+        created_at:
+          format: date-time
+          title: created_at
+          type: string
+      title: User
+      type: object
+    UserCreate:
+      example:
+        name: name
+        email: email
+      properties:
+        name:
+          title: name
+          type: string
+        email:
+          title: email
+          type: string
+      required:
+      - email
+      - name
+      title: UserCreate
+      type: object
+    Order:
+      example:
+        total: 1.4658129
+        user_id: 6
+        created_at: 2000-01-23T04:56:07.000+00:00
+        id: 0
+        status: Pending
+      properties:
+        id:
+          title: id
+          type: integer
+        user_id:
+          title: user_id
+          type: integer
+        total:
+          format: float
+          title: total
+          type: number
+        status:
+          enum:
+          - Pending
+          - Processing
+          - Shipped
+          - Delivered
+          title: status
+          type: string
+        created_at:
+          format: date-time
+          title: created_at
+          type: string
+      title: Order
+      type: object
+    OrderCreate:
+      example:
+        total: 6.0274563
+        user_id: 0
+      properties:
+        user_id:
+          title: user_id
+          type: integer
+        total:
+          format: float
+          title: total
+          type: number
+      required:
+      - total
+      - user_id
+      title: OrderCreate
+      type: object
