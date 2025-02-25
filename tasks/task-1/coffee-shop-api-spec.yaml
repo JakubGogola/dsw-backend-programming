@@ -1,0 +1,117 @@
+openapi: 3.0.0
+info:
+  title: Coffee Shop API
+  description: A simple API for managing coffee drinks.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+paths:
+  /coffees:
+    get:
+      summary: Get a list of all coffee drinks
+      operationId: getCoffees
+      tags:
+        - Coffees
+      responses:
+        "200":
+          description: A list of coffee drinks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Coffee"
+    post:
+      summary: Add a new coffee drink
+      operationId: addCoffee
+      tags:
+        - Coffees
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Coffee"
+      responses:
+        "201":
+          description: Coffee drink added successfully
+
+  /coffees/{coffee_id}:
+    get:
+      summary: Get details of a specific coffee drink
+      operationId: getCoffeeById
+      tags:
+        - Coffees
+      parameters:
+        - name: coffee_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Details of the coffee drink
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Coffee"
+        "404":
+          description: Coffee not found
+    put:
+      summary: Update a coffee drink
+      operationId: updateCoffee
+      tags:
+        - Coffees
+      parameters:
+        - name: coffee_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Coffee"
+      responses:
+        "200":
+          description: Coffee drink updated successfully
+        "404":
+          description: Coffee not found
+    delete:
+      summary: Delete a coffee drink
+      operationId: deleteCoffee
+      tags:
+        - Coffees
+      parameters:
+        - name: coffee_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Coffee deleted successfully
+        "404":
+          description: Coffee not found
+
+components:
+  schemas:
+    Coffee:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Espresso
+        description:
+          type: string
+          example: A strong and rich coffee drink
+        price:
+          type: number
+          format: float
+          example: 2.5
