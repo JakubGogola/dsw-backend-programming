@@ -13,3 +13,11 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Bazowy model dla SQLAlchemy
 Base = declarative_base()
+
+"""
+docker exec -it postgres_db psql -U user -d mydatabase
+
+mydatabase=> \dt
+mydatabase=> SELECT * FROM users;
+mydatabase=> \q
+"""
