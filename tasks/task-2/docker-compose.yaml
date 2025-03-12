@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: coffee_shop
+    ports:
+      - "5432:5432"
+  backend:
+    build: .
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql+asyncpg://user:password@db/coffee_shop
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
