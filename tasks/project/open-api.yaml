@@ -1,0 +1,235 @@
+openapi: 3.0.3
+info:
+  title: Grocery List Management API
+  description: A simple REST API for managing a grocery shopping list, designed for student term projects.
+  version: 1.0.0
+  contact:
+    name: University Course Staff
+    email: support@example.edu
+
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+
+tags:
+  - name: grocery-items
+    description: Operations for managing grocery items
+
+paths:
+  /items:
+    get:
+      summary: List all grocery items
+      description: Returns a list of all grocery items in the database
+      operationId: listItems
+      tags:
+        - grocery-items
+      responses:
+        '200':
+          description: A list of grocery items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GroceryItem'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: Add a new grocery item
+      description: Adds a new item to the grocery list
+      operationId: addItem
+      tags:
+        - grocery-items
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroceryItemCreate'
+      responses:
+        '201':
+          description: Item created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroceryItem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /items/{itemId}:
+    get:
+      summary: Get a grocery item by ID
+      description: Returns details of a specific grocery item
+      operationId: getItemById
+      tags:
+        - grocery-items
+      parameters:
+        - name: itemId
+          in: path
+          description: ID of the grocery item to retrieve
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Details of the grocery item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroceryItem'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+          
+    put:
+      summary: Update a grocery item
+      description: Updates an existing grocery item
+      operationId: updateItem
+      tags:
+        - grocery-items
+      parameters:
+        - name: itemId
+          in: path
+          description: ID of the grocery item to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroceryItemCreate'
+      responses:
+        '200':
+          description: Item updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroceryItem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+          
+    delete:
+      summary: Delete a grocery item
+      description: Deletes a grocery item from the list
+      operationId: deleteItem
+      tags:
+        - grocery-items
+      parameters:
+        - name: itemId
+          in: path
+          description: ID of the grocery item to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Item deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  schemas:
+    GroceryItemCreate:
+      type: object
+      required:
+        - name
+        - quantity
+      properties:
+        name:
+          type: string
+          description: Name of the grocery item
+          example: Milk
+          maxLength: 100
+        quantity:
+          type: integer
+          description: Quantity of the item needed
+          example: 2
+          minimum: 1
+        unit:
+          type: string
+          description: Unit of measurement
+          example: liters
+          maxLength: 20
+        category:
+          type: string
+          description: Category of the item
+          example: Dairy
+          maxLength: 50
+        notes:
+          type: string
+          description: Additional notes about the item
+          example: Lactose-free
+          maxLength: 255
+          
+    GroceryItem:
+      allOf:
+        - $ref: '#/components/schemas/GroceryItemCreate'
+        - type: object
+          required:
+            - id
+            - createdAt
+            - updatedAt
+          properties:
+            id:
+              type: integer
+              format: int64
+              description: Unique identifier for the item
+              example: 1
+            createdAt:
+              type: string
+              format: date-time
+              description: When the item was created
+            updatedAt:
+              type: string
+              format: date-time
+              description: When the item was last updated
+            purchased:
+              type: boolean
+              description: Whether the item has been purchased
+              default: false
+              
+    Error:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Error message
+        details:
+          type: string
+          description: Detailed error information
+
+  responses:
+    BadRequest:
+      description: Bad request - invalid input
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
